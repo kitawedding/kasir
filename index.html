@@ -619,9 +619,11 @@
     // ===== SUPABASE CONFIG =====
     const SUPABASE_URL = 'https://qaygttclzaivxrwstmst.supabase.co'
     const SUPABASE_KEY = 'sb_publishable_ma1LV44AFUnGHcw234s0_g_AQSf_ePT'
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+    const { createClient } = window.supabase
+    const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 
-    let barang = [], nota = []
+    let barang = []
+    let nota = []
 
     // ===== DARK MODE =====
     function toggleTheme() {
@@ -704,13 +706,13 @@
       }
 
       list.innerHTML = '';
-      barang.forEach((b) => {
+      barang.forEach((b, index) => {
         list.innerHTML += `
           <tr>
             <td class="fw-semibold">${b.nama}</td>
             <td><span class="badge-minimal">Rp ${formatRupiah(b.harga)}</span></td>
             <td class="text-end">
-              <button class='btn btn-outline-minimal btn-minimal btn-sm-minimal me-1' onclick='openEdit(${JSON.stringify(b).replace(/'/g, "&apos;")})'>
+              <button class='btn btn-outline-minimal btn-minimal btn-sm-minimal me-1' onclick='openEdit(${index})'>
                 Edit
               </button>
               <button class='btn btn-danger-minimal btn-minimal btn-sm-minimal' onclick='hapusBarang(${b.id})'>
@@ -729,11 +731,12 @@
       document.getElementById('hargaBarang').value = '';
     }
 
-    function openEdit(barang) {
+    function openEdit(index) {
+      const item = barang[index];
       document.getElementById('modalTitle').innerText = 'Edit Barang';
-      document.getElementById('barangIndex').value = barang.id;
-      document.getElementById('namaBarang').value = barang.nama;
-      document.getElementById('hargaBarang').value = barang.harga;
+      document.getElementById('barangIndex').value = item.id;
+      document.getElementById('namaBarang').value = item.nama;
+      document.getElementById('hargaBarang').value = item.harga;
       new bootstrap.Modal(document.getElementById('modalBarang')).show();
     }
 
