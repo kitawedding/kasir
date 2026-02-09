@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kasir Modern</title>
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    :root {
+      --primary: #212529;
+      --secondary: #495057;
+      --border: #dee2e6;
+      --hover-bg: #f8f9fa;
+      --bg-main: #ffffff;
+      --bg-secondary: #f8f9fa;
+      --text-primary: #212529;
+      --text-secondary: #6c757d;
+    }
+
+    [data-theme="dark"] {
+      --primary: #f8f9fa;
+      --secondary: #adb5bd;
+      --border: #495057;
+      --hover-bg: #343a40;
+      --bg-main: #212529;
+      --bg-secondary: #2c3034;
+      --text-primary: #f8f9fa;
+      --text-secondary: #adb5bd;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+    }
+
+    body {
+      background: var(--bg-main);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: var(--text-primary);
+    }
+
+    /* Dark Mode Toggle */
+    .theme-toggle {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 0.375rem 0.75rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .theme-toggle:hover {
+      background: var(--hover-bg);
+    }
+
+    /* Navbar */
+    .navbar-minimal {
+      background: var(--bg-main);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 0;
+    }
+
+    .nav-btn {
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.5rem 1.25rem;
+      font-weight: 500;
+      font-size: 0.875rem;
+      transition: all 0.2s ease;
+      color: var(--text-secondary);
+      background: transparent;
+    }
+
+    .nav-btn:hover {
+      background: var(--hover-bg);
+      border-color: var(--text-primary);
+      color: var(--text-primary);
+    }
+
+    .nav-btn.active {
+      background: var(--text-primary);
+      color: var(--bg-main);
+      border-color: var(--text-primary);
+    }
+
+    /* Cards */
+    .card-minimal {
+      background: var(--bg-main);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    .card-header-minimal {
+      background: var(--bg-main);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 1.25rem;
+      font-weight: 600;
+      font-size: 0.875rem;
+      color: var(--text-primary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Table */
+    .table-minimal {
+      margin: 0;
+      font-size: 0.875rem;
+      color: var(--text-primary);
+    }
+
+    .table-minimal thead {
+      background: var(--bg-secondary);
+      border-bottom: 2px solid var(--border);
+    }
+
+    .table-minimal th {
+      border: none;
+      padding: 0.75rem 1rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .table-minimal td {
+      border: none;
+      padding: 1rem;
+      vertical-align: middle;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .table-minimal tbody tr:hover {
+      background: var(--hover-bg);
+    }
+
+    .table-minimal tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* Buttons */
+    .btn-minimal {
+      border-radius: 6px;
+      padding: 0.5rem 1rem;
+      font-weight: 500;
+      font-size: 0.875rem;
+      border: 1px solid;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary-minimal {
+      background: var(--text-primary);
+      border-color: var(--text-primary);
+      color: var(--bg-main);
+    }
+
+    .btn-primary-minimal:hover {
+      opacity: 0.9;
+      color: var(--bg-main);
+    }
+
+    .btn-outline-minimal {
+      background: transparent;
+      border-color: var(--border);
+      color: var(--text-secondary);
+    }
+
+    .btn-outline-minimal:hover {
+      background: var(--hover-bg);
+      border-color: var(--text-primary);
+      color: var(--text-primary);
+    }
+
+    .btn-danger-minimal {
+      background: #dc3545;
+      border-color: #dc3545;
+      color: white;
+    }
+
+    .btn-danger-minimal:hover {
+      background: #bb2d3b;
+      border-color: #bb2d3b;
+    }
+
+    .btn-sm-minimal {
+      padding: 0.375rem 0.75rem;
+      font-size: 0.8125rem;
+    }
+
+    /* Input */
+    .form-control-minimal {
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.625rem 0.875rem;
+      transition: all 0.2s ease;
+      font-size: 0.875rem;
+      background: var(--bg-main);
+      color: var(--text-primary);
+    }
+
+    .form-control-minimal:focus {
+      border-color: var(--text-primary);
+      box-shadow: 0 0 0 3px rgba(33, 37, 41, 0.1);
+      outline: none;
+      background: var(--bg-main);
+      color: var(--text-primary);
+    }
+
+    /* Qty Input */
+    .qty-input {
+      width: 70px;
+      text-align: center;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.375rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      background: var(--bg-main);
+      color: var(--text-primary);
+    }
+
+    .qty-input:focus {
+      border-color: var(--text-primary);
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(33, 37, 41, 0.1);
+    }
+
+    /* Search Dropdown */
+    .search-wrapper {
+      position: relative;
+    }
+
+    .search-dropdown {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: var(--bg-main);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      margin-top: 0.5rem;
+      max-height: 350px;
+      overflow-y: auto;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      z-index: 9999;
+    }
+
+    .search-item {
+      padding: 0.875rem 1rem;
+      cursor: pointer;
+      border-bottom: 1px solid var(--border);
+      transition: all 0.15s ease;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .search-item:last-child {
+      border-bottom: none;
+    }
+
+    .search-item:hover {
+      background: var(--hover-bg);
+    }
+
+    .search-item-name {
+      font-weight: 500;
+      color: var(--text-primary);
+      font-size: 0.875rem;
+    }
+
+    .search-item-price {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      color: var(--text-primary);
+      padding: 0.25rem 0.625rem;
+      border-radius: 4px;
+      font-weight: 600;
+      font-size: 0.8125rem;
+    }
+
+    .search-no-results {
+      padding: 2rem;
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+    }
+
+    /* Stats */
+    .stats-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem;
+      text-align: center;
+    }
+
+    .stats-value {
+      font-size: 2rem;
+      font-weight: 700;
+      margin: 0.5rem 0;
+      color: var(--text-primary);
+    }
+
+    .stats-label {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 600;
+    }
+
+    /* Total Card */
+    .total-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.25rem 1.5rem;
+    }
+
+    /* Modal */
+    .modal-content-minimal {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--bg-main);
+    }
+
+    .modal-header-minimal {
+      background: var(--bg-main);
+      border-bottom: 1px solid var(--border);
+      padding: 1.25rem 1.5rem;
+    }
+
+    .modal-body {
+      background: var(--bg-main);
+    }
+
+    .modal-footer {
+      background: var(--bg-main);
+    }
+
+    .btn-close {
+      filter: var(--bs-btn-close-filter, invert(1));
+    }
+
+    [data-theme="dark"] .btn-close {
+      filter: invert(1);
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: var(--text-secondary);
+    }
+
+    .empty-state-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      opacity: 0.3;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg-secondary);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 3px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--text-secondary);
+    }
+
+    /* Animation */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .page {
+      animation: fadeIn 0.3s ease;
+    }
+
+    /* Badge */
+    .badge-minimal {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      color: var(--text-primary);
+      padding: 0.25rem 0.625rem;
+      border-radius: 4px;
+      font-weight: 600;
+      font-size: 0.75rem;
+    }
+
+    /* Label */
+    .form-label {
+      color: var(--text-primary);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .stats-value {
+        font-size: 1.75rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- NAV -->
+  <nav class="navbar-minimal sticky-top">
+    <div class="container">
+      <div class="d-flex align-items-center justify-content-between w-100 flex-wrap gap-3">
+        <h5 class="mb-0 fw-bold">Kasir Modern</h5>
+        <div class="d-flex gap-2 flex-wrap align-items-center">
+          <div class="theme-toggle" onclick="toggleTheme()">
+            <span id="themeIcon">🌙</span>
+            <span id="themeText">Dark</span>
+          </div>
+          <button class="btn nav-btn active" onclick="showPage('crud',this)">
+            Data Barang
+          </button>
+          <button class="btn nav-btn" onclick="showPage('kasir',this)">
+            Kasir
+          </button>
+          <button class="btn nav-btn" onclick="showPage('rekap',this)">
+            Rekap
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container my-4">
+
+    <!-- CRUD BARANG -->
+    <section id="crud" class="page">
+      <div class="card-minimal mb-4">
+        <div class="card-header-minimal">
+          Manajemen Barang
+        </div>
+        <div class="card-body p-4">
+          <button class="btn btn-primary-minimal btn-minimal mb-3" data-bs-toggle="modal" 
+            data-bs-target="#modalBarang" onclick="openTambah()">
+            + Tambah Barang
+          </button>
+          <div class="table-responsive">
+            <table class="table table-minimal">
+              <thead>
+                <tr>
+                  <th>Nama Barang</th>
+                  <th>Harga</th>
+                  <th class="text-end">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="barangList"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- KASIR -->
+    <section id="kasir" class="page d-none">
+      <!-- Search -->
+      <div class="card-minimal mb-4">
+        <div class="card-header-minimal">
+          Cari & Tambah Barang
+        </div>
+        <div class="card-body p-4">
+          <div class="search-wrapper">
+            <input id="search" class="form-control form-control-minimal" 
+              placeholder="Ketik nama barang untuk mencari..." 
+              onkeyup="showSearchResults()"
+              onfocus="showSearchResults()"
+              autocomplete="off">
+            
+            <!-- Dropdown Results -->
+            <div id="searchResults" class="search-dropdown d-none"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Nota -->
+      <div class="card-minimal">
+        <div class="card-header-minimal">
+          Nota Penjualan
+        </div>
+        <div class="card-body p-4">
+          <div class="table-responsive mb-3">
+            <table class="table table-minimal">
+              <thead>
+                <tr>
+                  <th>Barang</th>
+                  <th style="width: 100px;">Qty</th>
+                  <th class="text-end">Harga</th>
+                  <th class="text-end">Total</th>
+                  <th style="width: 60px;"></th>
+                </tr>
+              </thead>
+              <tbody id="notaList"></tbody>
+            </table>
+          </div>
+          
+          <div class="total-card d-flex justify-content-between align-items-center mb-3">
+            <h5 class="mb-0 fw-bold">Total Pembayaran</h5>
+            <h4 class="mb-0 fw-bold">
+              Rp <span id="grandTotal">0</span>
+            </h4>
+          </div>
+          
+          <button class="btn btn-primary-minimal btn-minimal w-100" 
+            onclick="submitPenjualan()">
+            Submit Penjualan
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- REKAP -->
+    <section id="rekap" class="page d-none">
+      <!-- Stats -->
+      <div class="stats-card mb-4">
+        <div class="stats-label">Total Penjualan Bulan Ini</div>
+        <div class="stats-value">Rp <span id="rekapTotal">0</span></div>
+        <div style="opacity: 0.6; margin-top: 0.5rem; font-size: 0.875rem">Februari 2026</div>
+      </div>
+
+      <!-- Detail Rekap -->
+      <div class="card-minimal">
+        <div class="card-header-minimal">
+          Detail Penjualan per Barang
+        </div>
+        <div class="card-body p-4">
+          <div class="table-responsive">
+            <table class="table table-minimal">
+              <thead>
+                <tr>
+                  <th>Nama Barang</th>
+                  <th class="text-center">Qty Terjual</th>
+                  <th class="text-end">Total Penjualan</th>
+                </tr>
+              </thead>
+              <tbody id="rekapList"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- MODAL -->
+  <div class="modal fade" id="modalBarang">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content modal-content-minimal">
+        <div class="modal-header modal-header-minimal">
+          <h6 id="modalTitle" class="mb-0 fw-bold"></h6>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body p-4">
+          <input type="hidden" id="barangIndex">
+          <div class="mb-3">
+            <label class="form-label fw-semibold" style="font-size: 0.875rem">Nama Barang</label>
+            <input id="namaBarang" class="form-control form-control-minimal" 
+              placeholder="Contoh: Indomie Goreng">
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold" style="font-size: 0.875rem">Harga (Rp)</label>
+            <input id="hargaBarang" type="number" class="form-control form-control-minimal" 
+              placeholder="Contoh: 3500">
+          </div>
+        </div>
+        <div class="modal-footer border-0 p-4 pt-0">
+          <button class="btn btn-outline-minimal btn-minimal" data-bs-dismiss="modal">
+            Batal
+          </button>
+          <button class="btn btn-primary-minimal btn-minimal" onclick="simpanBarang()">
+            Simpan
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ===== SUPABASE CONFIG =====
+    const SUPABASE_URL = 'YOUR_SUPABASE_URL'
+    const SUPABASE_KEY = 'YOUR_SUPABASE_ANON_KEY'
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+
+    let barang = [], nota = []
+
+    // ===== DARK MODE =====
+    function toggleTheme() {
+      const currentTheme = document.documentElement.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      
+      document.documentElement.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+      
+      updateThemeIcon(newTheme);
+    }
+
+    function updateThemeIcon(theme) {
+      const icon = document.getElementById('themeIcon');
+      const text = document.getElementById('themeText');
+      
+      if (theme === 'dark') {
+        icon.textContent = '☀️';
+        text.textContent = 'Light';
+      } else {
+        icon.textContent = '🌙';
+        text.textContent = 'Dark';
+      }
+    }
+
+    // Load saved theme
+    function loadTheme() {
+      const savedTheme = localStorage.getItem('theme') || 'light';
+      document.documentElement.setAttribute('data-theme', savedTheme);
+      updateThemeIcon(savedTheme);
+    }
+
+    // Format number
+    function formatRupiah(num) {
+      return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+
+    // Navigation
+    function showPage(id, btn) {
+      document.querySelectorAll('.page').forEach(p => p.classList.add('d-none'));
+      document.getElementById(id).classList.remove('d-none');
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      if (id === 'rekap') loadRekap();
+    }
+
+    // ===== CRUD BARANG =====
+    async function loadBarang() {
+      try {
+        const { data, error } = await supabase
+          .from('barang')
+          .select('*')
+          .order('nama', { ascending: true });
+
+        if (error) throw error;
+
+        barang = data || [];
+        renderBarang();
+      } catch (err) {
+        console.error('Error loading barang:', err);
+        alert('Gagal memuat data barang');
+      }
+    }
+
+    function renderBarang() {
+      const list = document.getElementById('barangList');
+      if (barang.length === 0) {
+        list.innerHTML = `
+          <tr>
+            <td colspan="3" class="text-center py-5">
+              <div class="empty-state">
+                <div class="empty-state-icon">📦</div>
+                <div>Belum ada barang</div>
+                <small>Klik "Tambah Barang" untuk memulai</small>
+              </div>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      list.innerHTML = '';
+      barang.forEach((b) => {
+        list.innerHTML += `
+          <tr>
+            <td class="fw-semibold">${b.nama}</td>
+            <td><span class="badge-minimal">Rp ${formatRupiah(b.harga)}</span></td>
+            <td class="text-end">
+              <button class='btn btn-outline-minimal btn-minimal btn-sm-minimal me-1' onclick='openEdit(${JSON.stringify(b).replace(/'/g, "&apos;")})'>
+                Edit
+              </button>
+              <button class='btn btn-danger-minimal btn-minimal btn-sm-minimal' onclick='hapusBarang(${b.id})'>
+                Hapus
+              </button>
+            </td>
+          </tr>
+        `;
+      });
+    }
+
+    function openTambah() {
+      document.getElementById('modalTitle').innerText = 'Tambah Barang';
+      document.getElementById('barangIndex').value = '';
+      document.getElementById('namaBarang').value = '';
+      document.getElementById('hargaBarang').value = '';
+    }
+
+    function openEdit(barang) {
+      document.getElementById('modalTitle').innerText = 'Edit Barang';
+      document.getElementById('barangIndex').value = barang.id;
+      document.getElementById('namaBarang').value = barang.nama;
+      document.getElementById('hargaBarang').value = barang.harga;
+      new bootstrap.Modal(document.getElementById('modalBarang')).show();
+    }
+
+    async function simpanBarang() {
+      const id = document.getElementById('barangIndex').value;
+      const nama = document.getElementById('namaBarang').value;
+      const harga = parseInt(document.getElementById('hargaBarang').value);
+      
+      if (!nama || !harga) {
+        alert('Mohon isi semua field!');
+        return;
+      }
+
+      try {
+        if (id) {
+          // Update
+          const { error } = await supabase
+            .from('barang')
+            .update({ nama, harga })
+            .eq('id', id);
+
+          if (error) throw error;
+        } else {
+          // Insert
+          const { error } = await supabase
+            .from('barang')
+            .insert([{ nama, harga }]);
+
+          if (error) throw error;
+        }
+
+        loadBarang();
+        bootstrap.Modal.getInstance(document.getElementById('modalBarang')).hide();
+      } catch (err) {
+        console.error('Error saving:', err);
+        alert('Gagal menyimpan data');
+      }
+    }
+
+    async function hapusBarang(id) {
+      if (confirm('Hapus barang ini?')) {
+        try {
+          const { error } = await supabase
+            .from('barang')
+            .delete()
+            .eq('id', id);
+
+          if (error) throw error;
+
+          loadBarang();
+        } catch (err) {
+          console.error('Error deleting:', err);
+          alert('Gagal menghapus data');
+        }
+      }
+    }
+
+    // ===== KASIR =====
+    function showSearchResults() {
+      const searchInput = document.getElementById('search');
+      const searchResults = document.getElementById('searchResults');
+      const query = searchInput.value.toLowerCase().trim();
+
+      if (query === '') {
+        searchResults.classList.add('d-none');
+        return;
+      }
+
+      const filtered = barang.filter(b => 
+        b.nama.toLowerCase().includes(query)
+      );
+
+      if (filtered.length === 0) {
+        searchResults.innerHTML = `
+          <div class="search-no-results">
+            <div style="font-size: 2rem; margin-bottom: 0.5rem">🔍</div>
+            <div>Barang tidak ditemukan</div>
+          </div>
+        `;
+        searchResults.classList.remove('d-none');
+        return;
+      }
+
+      searchResults.innerHTML = '';
+      filtered.forEach(b => {
+        const item = document.createElement('div');
+        item.className = 'search-item';
+        item.onclick = () => selectBarang(b.id, b.nama, b.harga);
+        item.innerHTML = `
+          <div class="search-item-name">${b.nama}</div>
+          <div class="search-item-price">Rp ${formatRupiah(b.harga)}</div>
+        `;
+        searchResults.appendChild(item);
+      });
+
+      searchResults.classList.remove('d-none');
+    }
+
+    function selectBarang(id, nama, harga) {
+      addNota(id, nama, harga);
+      
+      document.getElementById('search').value = '';
+      document.getElementById('searchResults').classList.add('d-none');
+      
+      document.getElementById('search').focus();
+    }
+
+    function addNota(id, nama, harga) {
+      let item = nota.find(n => n.barang_id === id);
+      if (item) {
+        item.qty++;
+      } else {
+        nota.push({ barang_id: id, nama, harga, qty: 1 });
+      }
+      renderNota();
+    }
+
+    function updateQty(index, value) {
+      const qty = parseInt(value) || 0;
+      if (qty <= 0) {
+        nota.splice(index, 1);
+      } else {
+        nota[index].qty = qty;
+      }
+      renderNota();
+    }
+
+    function renderNota() {
+      const list = document.getElementById('notaList');
+      
+      if (nota.length === 0) {
+        list.innerHTML = `
+          <tr>
+            <td colspan="5" class="text-center py-5">
+              <div class="empty-state">
+                <div class="empty-state-icon">🛒</div>
+                <div>Belum ada barang di nota</div>
+              </div>
+            </td>
+          </tr>
+        `;
+        document.getElementById('grandTotal').innerText = '0';
+        return;
+      }
+
+      list.innerHTML = '';
+      let total = 0;
+      
+      nota.forEach((n, i) => {
+        const subtotal = n.harga * n.qty;
+        total += subtotal;
+        list.innerHTML += `
+          <tr>
+            <td class="fw-semibold">${n.nama}</td>
+            <td>
+              <input type="number" 
+                class="qty-input" 
+                value="${n.qty}" 
+                min="1"
+                onchange="updateQty(${i}, this.value)"
+                onclick="this.select()">
+            </td>
+            <td class="text-end">Rp ${formatRupiah(n.harga)}</td>
+            <td class="text-end fw-bold">Rp ${formatRupiah(subtotal)}</td>
+            <td class="text-end">
+              <button class='btn btn-danger-minimal btn-minimal btn-sm-minimal' 
+                onclick='nota.splice(${i},1);renderNota()'>
+                ×
+              </button>
+            </td>
+          </tr>
+        `;
+      });
+      
+      document.getElementById('grandTotal').innerText = formatRupiah(total);
+    }
+
+    async function submitPenjualan() {
+      if (nota.length === 0) {
+        alert('Nota kosong!');
+        return;
+      }
+
+      if (!confirm('Submit penjualan ini?')) return;
+
+      try {
+        // Insert penjualan
+        const { data: penjualanData, error: penjualanError } = await supabase
+          .from('penjualan')
+          .insert([{
+            tanggal: new Date().toISOString(),
+            total: nota.reduce((sum, n) => sum + (n.harga * n.qty), 0)
+          }])
+          .select();
+
+        if (penjualanError) throw penjualanError;
+
+        const penjualanId = penjualanData[0].id;
+
+        // Insert detail penjualan
+        const details = nota.map(n => ({
+          penjualan_id: penjualanId,
+          barang_id: n.barang_id,
+          qty: n.qty,
+          harga: n.harga,
+          subtotal: n.harga * n.qty
+        }));
+
+        const { error: detailError } = await supabase
+          .from('penjualan_detail')
+          .insert(details);
+
+        if (detailError) throw detailError;
+
+        nota = [];
+        renderNota();
+        alert('Penjualan berhasil disimpan!');
+      } catch (err) {
+        console.error('Error submitting:', err);
+        alert('Gagal menyimpan penjualan');
+      }
+    }
+
+    // ===== REKAP =====
+    async function loadRekap() {
+      try {
+        // Get current month
+        const now = new Date();
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+        const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59).toISOString();
+
+        // Get total penjualan
+        const { data: penjualanData, error: penjualanError } = await supabase
+          .from('penjualan')
+          .select('total')
+          .gte('tanggal', startOfMonth)
+          .lte('tanggal', endOfMonth);
+
+        if (penjualanError) throw penjualanError;
+
+        const totalPenjualan = penjualanData.reduce((sum, p) => sum + p.total, 0);
+        document.getElementById('rekapTotal').innerText = formatRupiah(totalPenjualan);
+
+        // Get detail per barang
+        const { data: detailData, error: detailError } = await supabase
+          .from('penjualan_detail')
+          .select(`
+            barang_id,
+            qty,
+            subtotal,
+            barang:barang_id (nama)
+          `)
+          .gte('created_at', startOfMonth)
+          .lte('created_at', endOfMonth);
+
+        if (detailError) throw detailError;
+
+        // Aggregate by barang
+        const aggregated = {};
+        detailData.forEach(d => {
+          if (!aggregated[d.barang_id]) {
+            aggregated[d.barang_id] = {
+              nama: d.barang.nama,
+              qty: 0,
+              total: 0
+            };
+          }
+          aggregated[d.barang_id].qty += d.qty;
+          aggregated[d.barang_id].total += d.subtotal;
+        });
+
+        const list = document.getElementById('rekapList');
+        
+        if (Object.keys(aggregated).length === 0) {
+          list.innerHTML = `
+            <tr>
+              <td colspan="3" class="text-center py-5">
+                <div class="empty-state">
+                  <div class="empty-state-icon">📊</div>
+                  <div>Belum ada penjualan</div>
+                </div>
+              </td>
+            </tr>
+          `;
+          return;
+        }
+
+        list.innerHTML = '';
+        Object.values(aggregated).forEach(r => {
+          list.innerHTML += `
+            <tr>
+              <td class="fw-semibold">${r.nama}</td>
+              <td class="text-center">
+                <span class="badge-minimal">${r.qty} pcs</span>
+              </td>
+              <td class="text-end fw-bold">
+                Rp ${formatRupiah(r.total)}
+              </td>
+            </tr>
+          `;
+        });
+      } catch (err) {
+        console.error('Error loading rekap:', err);
+        alert('Gagal memuat rekap');
+      }
+    }
+
+    // Initialize
+    loadTheme();
+    loadBarang();
+
+    // Setup event listener
+    document.addEventListener('click', function(e) {
+      const searchInput = document.getElementById('search');
+      const searchResults = document.getElementById('searchResults');
+      
+      if (searchInput && searchResults) {
+        if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+          searchResults.classList.add('d-none');
+        }
+      }
+    });
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
