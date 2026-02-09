@@ -1,0 +1,13 @@
+{
+  "name": "kasir-modern",
+  "version": "1.0.0",
+  "description": "Aplikasi Kasir Modern dengan Supabase",
+  "main": "index.html",
+  "scripts": {
+    "dev": "serve .",
+    "build": "echo 'No build required for static site'"
+  },
+  "keywords": ["kasir", "pos", "supabase"],
+  "author": "",
+  "license": "MIT"
+}
