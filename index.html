@@ -130,7 +130,7 @@
 
     .table-minimal th {
       border: none;
-      padding: 0.75rem 1rem;
+      padding: 0.75rem 0.4rem;
       font-weight: 600;
       color: var(--text-secondary);
       font-size: 0.75rem;
@@ -358,6 +358,131 @@
     .modal-header {
       background: var(--bg-main);
       border-bottom: 1px solid var(--border);
+    }
+
+    /* Print Thermal Receipt Styles */
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      
+      #printArea,
+      #printArea * {
+        visibility: visible;
+      }
+      
+      #printArea {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 80mm;
+        font-family: 'Courier New', monospace;
+      }
+      
+      @page {
+        size: 80mm auto;
+        margin: 0;
+      }
+    }
+
+    .thermal-receipt {
+      width: 80mm;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      line-height: 1.4;
+      padding: 10px;
+      background: white;
+      color: black;
+    }
+
+    .thermal-header {
+      text-align: center;
+      margin-bottom: 10px;
+      border-bottom: 1px dashed #000;
+      padding-bottom: 10px;
+    }
+
+    .thermal-title {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .thermal-info {
+      font-size: 11px;
+      margin: 2px 0;
+    }
+
+    .thermal-items {
+      margin: 10px 0;
+      border-bottom: 1px dashed #000;
+      padding-bottom: 10px;
+    }
+
+    .thermal-item {
+      display: flex;
+      justify-content: space-between;
+      margin: 5px 0;
+      font-size: 12px;
+    }
+
+    .thermal-item-detail {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: #666;
+      margin-left: 10px;
+    }
+
+    .thermal-total {
+      border-top: 1px solid #000;
+      padding-top: 10px;
+      margin-top: 10px;
+    }
+
+    .thermal-total-line {
+      display: flex;
+      justify-content: space-between;
+      font-size: 14px;
+      font-weight: bold;
+      margin: 5px 0;
+    }
+
+    .thermal-footer {
+      text-align: center;
+      margin-top: 15px;
+      font-size: 11px;
+      border-top: 1px dashed #000;
+      padding-top: 10px;
+    }
+
+    .thermal-center {
+      text-align: center;
+    }
+
+    /* Transaction Detail */
+    .transaction-detail {
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .transaction-item {
+      margin: 0.25rem 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .transaction-item-name {
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .transaction-item-qty {
+      color: var(--text-secondary);
+      font-size: 0.75rem;
+      margin-left: 0.5rem;
       padding: 1.25rem 1.5rem;
     }
 
@@ -460,9 +585,14 @@
                 <div class="stats-label mb-0">Total</div>
                 <div class="stats-value">Rp <span id="grandTotal">0</span></div>
               </div>
-              <button class="btn btn-primary-minimal btn-minimal w-100" id="btnSubmitPenjualan">
-                Submit Penjualan
-              </button>
+              <div class="d-grid gap-2">
+                <button class="btn btn-primary-minimal btn-minimal" id="btnSubmitPenjualan">
+                  💾 Submit Penjualan
+                </button>
+                <button class="btn btn-outline-minimal btn-minimal" id="btnCetakNota">
+                  🖨️ Cetak Nota
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -515,26 +645,34 @@
 
     <!-- PENJUALAN -->
     <div id="pagePenjualan" class="d-none">
-      <div class="stats-card">
-        <div class="stats-label">Total Penjualan Bulan Ini</div>
-        <div class="stats-value">Rp <span id="rekapTotal">0</span></div>
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="stats-card">
+          <div class="stats-label">Total Penjualan Bulan Ini</div>
+          <div class="stats-value">Rp <span id="rekapTotal">0</span></div>
+        </div>
+        <button class="btn btn-primary-minimal btn-minimal btn-sm-minimal" id="btnExportExcel">
+          📊 Export ke Excel
+        </button>
       </div>
 
       <div class="card-minimal">
-        <div class="card-header-minimal">Penjualan per Barang</div>
+        <div class="card-header-minimal">Riwayat Transaksi</div>
         <div class="card-body p-0">
           <div class="table-responsive">
             <table class="table table-minimal mb-0">
               <thead>
                 <tr>
-                  <th>Barang</th>
-                  <th class="text-center" style="width: 150px">Qty Terjual</th>
-                  <th class="text-end" style="width: 180px">Total</th>
+                  <th style="width: 50px">No</th>
+                  <th style="width: 100px">Tanggal</th>
+                  <th style="width: 80px">Waktu</th>
+                  <th>Detail Barang</th>
+                  <th class="text-end" style="width: 160px">Total</th>
+                  <th class="text-center" style="width: 100px">Aksi</th>
                 </tr>
               </thead>
               <tbody id="rekapList">
                 <tr>
-                  <td colspan="3" class="text-center py-5">
+                  <td colspan="6" class="text-center py-5">
                     <div class="empty-state">
                       <div class="empty-state-icon">📊</div>
                       <div>Loading...</div>
@@ -578,6 +716,9 @@
 
   <!-- Bootstrap Bundle -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <!-- SheetJS for Excel Export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   
   <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -703,11 +844,11 @@
             <td class="text-end">Rp ${formatRupiah(b.harga)}</td>
             <td class="text-end">
               <button class="btn btn-outline-minimal btn-minimal btn-sm-minimal me-1" 
-                onclick="editBarang(${b.id})" style="margin : 4px;">
+                onclick="editBarang(${b.id})" style="margin: 2px">
                 Edit
               </button>
               <button class="btn btn-danger-minimal btn-minimal btn-sm-minimal" 
-                onclick="hapusBarang(${b.id})">
+                onclick="hapusBarang(${b.id})" style="margin: 2px">
                 Hapus
               </button>
             </td>
@@ -954,13 +1095,100 @@
 
         if (detailError) throw detailError;
 
+        alert('Penjualan berhasil disimpan!');
+        
+        // Tanya apakah mau cetak
+        if (confirm('Cetak nota?')) {
+          cetakNota();
+        }
+        
         nota = [];
         renderNota();
-        alert('Penjualan berhasil disimpan!');
       } catch (err) {
         console.error('Error submitting:', err);
         alert('Gagal menyimpan penjualan');
       }
+    }
+
+    function cetakNota() {
+      if (nota.length === 0) {
+        alert('Nota kosong!');
+        return;
+      }
+
+      const now = new Date();
+      const tanggal = now.toLocaleDateString('id-ID', { 
+        day: '2-digit', 
+        month: '2-digit', 
+        year: 'numeric' 
+      });
+      const waktu = now.toLocaleTimeString('id-ID', { 
+        hour: '2-digit', 
+        minute: '2-digit' 
+      });
+      
+      let total = 0;
+      let itemsHTML = '';
+      
+      nota.forEach(n => {
+        const subtotal = n.harga * n.qty;
+        total += subtotal;
+        
+        itemsHTML += `
+          <div class="thermal-item">
+            <span>${n.nama}</span>
+          </div>
+          <div class="thermal-item-detail">
+            <span>${n.qty} x Rp ${formatRupiah(n.harga)}</span>
+            <span>Rp ${formatRupiah(subtotal)}</span>
+          </div>
+        `;
+      });
+
+      const receiptHTML = `
+        <div id="printArea" class="thermal-receipt">
+          <div class="thermal-header">
+            <div class="thermal-title">TOKO MODERN</div>
+            <div class="thermal-info">Jl. Contoh No. 123</div>
+            <div class="thermal-info">Telp: 0812-3456-7890</div>
+          </div>
+          
+          <div class="thermal-info">
+            <div>Tanggal: ${tanggal}</div>
+            <div>Waktu: ${waktu}</div>
+          </div>
+          
+          <div class="thermal-items">
+            ${itemsHTML}
+          </div>
+          
+          <div class="thermal-total">
+            <div class="thermal-total-line">
+              <span>TOTAL</span>
+              <span>Rp ${formatRupiah(total)}</span>
+            </div>
+          </div>
+          
+          <div class="thermal-footer">
+            <div>*** TERIMA KASIH ***</div>
+            <div>Barang yang sudah dibeli</div>
+            <div>tidak dapat dikembalikan</div>
+          </div>
+        </div>
+      `;
+
+      // Buat temporary div untuk print
+      const printDiv = document.createElement('div');
+      printDiv.innerHTML = receiptHTML;
+      document.body.appendChild(printDiv);
+
+      // Print
+      window.print();
+
+      // Hapus temporary div
+      setTimeout(() => {
+        document.body.removeChild(printDiv);
+      }, 100);
     }
 
     // ===== REKAP =====
@@ -971,24 +1199,160 @@
         const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
         const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59).toISOString();
 
-        // Get total penjualan
+        // Get penjualan dengan detail
         const { data: penjualanData, error: penjualanError } = await supabaseClient
           .from('penjualan')
-          .select('total')
+          .select(`
+            id,
+            tanggal,
+            total,
+            penjualan_detail (
+              qty,
+              harga,
+              subtotal,
+              barang:barang_id (nama)
+            )
+          `)
           .gte('tanggal', startOfMonth)
-          .lte('tanggal', endOfMonth);
+          .lte('tanggal', endOfMonth)
+          .order('tanggal', { ascending: false });
 
         if (penjualanError) throw penjualanError;
 
         const totalPenjualan = penjualanData.reduce((sum, p) => sum + p.total, 0);
         document.getElementById('rekapTotal').innerText = formatRupiah(totalPenjualan);
 
-        // Get detail per barang
+        const list = document.getElementById('rekapList');
+        
+        if (penjualanData.length === 0) {
+          list.innerHTML = `
+            <tr>
+              <td colspan="6" class="text-center py-5">
+                <div class="empty-state">
+                  <div class="empty-state-icon">📊</div>
+                  <div>Belum ada penjualan</div>
+                </div>
+              </td>
+            </tr>
+          `;
+          return;
+        }
+
+        list.innerHTML = '';
+        penjualanData.forEach((p, index) => {
+          const date = new Date(p.tanggal);
+          const tanggal = date.toLocaleDateString('id-ID', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric'
+          });
+          const waktu = date.toLocaleTimeString('id-ID', {
+            hour: '2-digit',
+            minute: '2-digit'
+          });
+
+          // Build detail barang
+          let detailHTML = '<div class="transaction-detail">';
+          p.penjualan_detail.forEach(d => {
+            detailHTML += `
+              <div class="transaction-item">
+                <div>
+                  <span class="transaction-item-name">${d.barang.nama}</span>
+                  <span class="transaction-item-qty">${d.qty}x @ Rp ${formatRupiah(d.harga)}</span>
+                </div>
+                <div style="font-weight: 500;">Rp ${formatRupiah(d.subtotal)}</div>
+              </div>
+            `;
+          });
+          detailHTML += '</div>';
+
+          list.innerHTML += `
+            <tr>
+              <td class="text-center">${index + 1}</td>
+              <td>${tanggal}</td>
+              <td>${waktu}</td>
+              <td>${detailHTML}</td>
+              <td class="text-end fw-bold">Rp ${formatRupiah(p.total)}</td>
+              <td class="text-center">
+                <button class="btn btn-danger-minimal btn-minimal btn-sm-minimal" 
+                  onclick="hapusTransaksi(${p.id})"
+                  title="Hapus Transaksi">
+                  🗑️
+                </button>
+              </td>
+            </tr>
+          `;
+        });
+      } catch (err) {
+        console.error('Error loading rekap:', err);
+        alert('Gagal memuat rekap');
+      }
+    }
+
+    async function hapusTransaksi(id) {
+      if (!confirm('Yakin hapus transaksi ini? Data tidak dapat dikembalikan!')) return;
+
+      try {
+        // Hapus detail terlebih dahulu (foreign key constraint)
+        const { error: detailError } = await supabaseClient
+          .from('penjualan_detail')
+          .delete()
+          .eq('penjualan_id', id);
+
+        if (detailError) throw detailError;
+
+        // Hapus penjualan
+        const { error: penjualanError } = await supabaseClient
+          .from('penjualan')
+          .delete()
+          .eq('id', id);
+
+        if (penjualanError) throw penjualanError;
+
+        alert('Transaksi berhasil dihapus');
+        loadRekap(); // Reload data
+      } catch (err) {
+        console.error('Error deleting transaction:', err);
+        alert('Gagal menghapus transaksi');
+      }
+    }
+
+    async function exportToExcel() {
+      try {
+        // Get current month
+        const now = new Date();
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+        const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59).toISOString();
+        
+        const monthName = now.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+
+        // Get all penjualan dengan detail
+        const { data: penjualanData, error: penjualanError } = await supabaseClient
+          .from('penjualan')
+          .select(`
+            id,
+            tanggal,
+            total
+          `)
+          .gte('tanggal', startOfMonth)
+          .lte('tanggal', endOfMonth)
+          .order('tanggal', { ascending: false });
+
+        if (penjualanError) throw penjualanError;
+
+        if (!penjualanData || penjualanData.length === 0) {
+          alert('Tidak ada data penjualan untuk diexport');
+          return;
+        }
+
+        // Get detail for all penjualan
         const { data: detailData, error: detailError } = await supabaseClient
           .from('penjualan_detail')
           .select(`
+            penjualan_id,
             barang_id,
             qty,
+            harga,
             subtotal,
             barang:barang_id (nama)
           `)
@@ -997,7 +1361,33 @@
 
         if (detailError) throw detailError;
 
-        // Aggregate by barang
+        // Prepare data untuk Excel - Sheet 1: Ringkasan Penjualan
+        const ringkasanData = [
+          ['LAPORAN PENJUALAN'],
+          ['Periode: ' + monthName],
+          [''],
+          ['No', 'Tanggal', 'Waktu', 'Total Penjualan']
+        ];
+
+        penjualanData.forEach((p, index) => {
+          const date = new Date(p.tanggal);
+          const tanggal = date.toLocaleDateString('id-ID');
+          const waktu = date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+          
+          ringkasanData.push([
+            index + 1,
+            tanggal,
+            waktu,
+            p.total
+          ]);
+        });
+
+        // Total
+        const grandTotal = penjualanData.reduce((sum, p) => sum + p.total, 0);
+        ringkasanData.push([]);
+        ringkasanData.push(['', '', 'TOTAL', grandTotal]);
+
+        // Sheet 2: Detail Per Barang
         const aggregated = {};
         detailData.forEach(d => {
           if (!aggregated[d.barang_id]) {
@@ -1011,39 +1401,84 @@
           aggregated[d.barang_id].total += d.subtotal;
         });
 
-        const list = document.getElementById('rekapList');
-        
-        if (Object.keys(aggregated).length === 0) {
-          list.innerHTML = `
-            <tr>
-              <td colspan="3" class="text-center py-5">
-                <div class="empty-state">
-                  <div class="empty-state-icon">📊</div>
-                  <div>Belum ada penjualan</div>
-                </div>
-              </td>
-            </tr>
-          `;
-          return;
-        }
+        const detailPerBarangData = [
+          ['PENJUALAN PER BARANG'],
+          ['Periode: ' + monthName],
+          [''],
+          ['No', 'Nama Barang', 'Qty Terjual', 'Total Penjualan']
+        ];
 
-        list.innerHTML = '';
-        Object.values(aggregated).forEach(r => {
-          list.innerHTML += `
-            <tr>
-              <td class="fw-semibold">${r.nama}</td>
-              <td class="text-center">
-                <span class="badge-minimal">${r.qty} pcs</span>
-              </td>
-              <td class="text-end fw-bold">
-                Rp ${formatRupiah(r.total)}
-              </td>
-            </tr>
-          `;
+        let no = 1;
+        Object.values(aggregated).forEach(item => {
+          detailPerBarangData.push([
+            no++,
+            item.nama,
+            item.qty,
+            item.total
+          ]);
         });
+
+        // Total
+        const totalQty = Object.values(aggregated).reduce((sum, item) => sum + item.qty, 0);
+        const totalNilai = Object.values(aggregated).reduce((sum, item) => sum + item.total, 0);
+        detailPerBarangData.push([]);
+        detailPerBarangData.push(['', 'TOTAL', totalQty, totalNilai]);
+
+        // Sheet 3: Detail Transaksi Lengkap
+        const detailTransaksiData = [
+          ['DETAIL TRANSAKSI LENGKAP'],
+          ['Periode: ' + monthName],
+          [''],
+          ['No', 'Tanggal', 'Waktu', 'Barang', 'Qty', 'Harga', 'Subtotal']
+        ];
+
+        let transNo = 1;
+        penjualanData.forEach(p => {
+          const details = detailData.filter(d => d.penjualan_id === p.id);
+          const date = new Date(p.tanggal);
+          const tanggal = date.toLocaleDateString('id-ID');
+          const waktu = date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+          
+          details.forEach(d => {
+            detailTransaksiData.push([
+              transNo++,
+              tanggal,
+              waktu,
+              d.barang.nama,
+              d.qty,
+              d.harga,
+              d.subtotal
+            ]);
+          });
+        });
+
+        // Create workbook
+        const wb = XLSX.utils.book_new();
+        
+        // Add sheets
+        const ws1 = XLSX.utils.aoa_to_sheet(ringkasanData);
+        const ws2 = XLSX.utils.aoa_to_sheet(detailPerBarangData);
+        const ws3 = XLSX.utils.aoa_to_sheet(detailTransaksiData);
+        
+        XLSX.utils.book_append_sheet(wb, ws1, 'Ringkasan Penjualan');
+        XLSX.utils.book_append_sheet(wb, ws2, 'Per Barang');
+        XLSX.utils.book_append_sheet(wb, ws3, 'Detail Transaksi');
+
+        // Set column widths
+        ws1['!cols'] = [{ wch: 5 }, { wch: 15 }, { wch: 10 }, { wch: 20 }];
+        ws2['!cols'] = [{ wch: 5 }, { wch: 30 }, { wch: 15 }, { wch: 20 }];
+        ws3['!cols'] = [{ wch: 5 }, { wch: 15 }, { wch: 10 }, { wch: 30 }, { wch: 8 }, { wch: 15 }, { wch: 15 }];
+
+        // Generate filename
+        const filename = `Laporan_Penjualan_${monthName.replace(' ', '_')}.xlsx`;
+
+        // Download
+        XLSX.writeFile(wb, filename);
+        
+        alert('Export berhasil! File tersimpan: ' + filename);
       } catch (err) {
-        console.error('Error loading rekap:', err);
-        alert('Gagal memuat rekap');
+        console.error('Error exporting:', err);
+        alert('Gagal export ke Excel');
       }
     }
 
@@ -1076,6 +1511,10 @@
       // Kasir
       document.getElementById('search').addEventListener('input', showSearchResults);
       document.getElementById('btnSubmitPenjualan').addEventListener('click', submitPenjualan);
+      document.getElementById('btnCetakNota').addEventListener('click', cetakNota);
+
+      // Export Excel
+      document.getElementById('btnExportExcel').addEventListener('click', exportToExcel);
 
       // Click outside to close search
       document.addEventListener('click', function(e) {
